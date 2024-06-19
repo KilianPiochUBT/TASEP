@@ -17,7 +17,7 @@ Additional information on the deriavtion of the higher order mean field models c
 
 ## Dependencies
 
-Rudimentary Parallelization is implemented using OpenMP, see https://www.openmp.org/ and the installation instructions therein 
+Rudimentary Parallelization is implemented using OpenMP, see https://www.openmp.org/ and the installation instructions therein.\
 The Steady State calculations require GnuMP , see https://gmplib.org/ and the installation instructions therein
 
 ## Installation
@@ -43,7 +43,7 @@ In general all programs are called analogously. They mainly differ in their unde
    This program uses RK4 to solve the [Master Equation](https://en.wikipedia.org/wiki/Master_equation)
    of the TASEP-System which is specified in the command line options. 
    
-   The master equation describes an ODE of all full length states. These trajectories of these states are then used to calculate the individual expected values over the simulation time. 
+   The master equation describes an ODE of the temporal evolution of the probability of all full length lattice states. The trajectories of these states are then used to calculate the individual expected values for the simulation time. 
    This top down approach is the most accurate to-date.
    Note that due to the exponential growth of the dimensionality of the ODE, Lattices of size >31 will require upwards of 128GiB of RAM.
 
@@ -78,14 +78,14 @@ Jump Rates:
 
    - `--save-select [a|e|p|c|m]` this switch can control which values will be saved to file during or after the calculation (depeding on `-a <num>`). Several can be selected simultaneously.
    Possible options are:
-      `-a` All of the below
-      `-e` Expected values ordered from entry to exit node
-      `-p` Probabilities of all possible states ordered from the state represented by binary 0 to state $`2^N - 1`$, with N=chain length
-      `-c` Covariance Matrices
-      `-m` Multiplicative expected values (depreciated)
+      `-a` All of the below\
+      `-e` Expected values ordered from entry to exit node\
+      `-p` Probabilities of all possible states ordered from the state represented by binary 0 to state $`2^N - 1`$, with N=chain length\
+      `-c` Covariance Matrices\
+      `-m` Multiplicative expected values (depreciated)\
 
    The solver is also able to solve systems with time dependend jump rates.  
-   It is important to note here that the default behaviour of the solver is to run until `-T <num>` is reached. Because of entrainment it is not expected for the trajectories to settle at some steady state
+   It is important to note here that in this case the default behaviour of the solver is to run until `-T <num>` is reached. Because of entrainment it is not expected for the trajectories to settle at some steady state
 
    Necessary switches for time variant flow rates
 
@@ -94,12 +94,12 @@ Jump Rates:
 
    Optional switches for time variant flow rates
 
-   - `--function-type <filename>` program tries to read from given filename. The entries in the file will set the function types for the hop rates from left to right. The contents of the file may look like this "ssc ls" this would give:
-      - $`h_0(t) = \alpha(t) = sin(t)`$
-      - $`h_1(t) = sin(t)`$
-      - $`h_2(t) = cos(t)`$
-      - $`h_3(t) = t`$
-      - $`h_4(t) = \beta(t) = sin(t)`$
+   - `--function-type <filename>` program tries to read from given filename. The entries in the file will set the function types for the hop rates from left to right. The contents of the file may look like this "sscls" this would give:
+      - $`\alpha(t) = sin(t)`$
+      - $`h_0(t) = sin(t)`$
+      - $`h_1(t) = cos(t)`$
+      - $`h_2(t) = t`$
+      - $`\beta(t) = sin(t)`$
 
    - `--amplitude <filename>` program tries to read from given filename. The content of the file will set the amplitude in the functions for the jump rates. For a given file with the content $`4\quad -1.3\quad 1\quad 0\quad 1.1`$ this would give:
       - $`h_0(t) = \alpha(t) = 4sin(t)`$
