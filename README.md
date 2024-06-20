@@ -132,227 +132,33 @@ Jump Rates:
 ### mf_full
 
    This program utilises a system description obtained by expanding the ODEs for individual expected values. 
-   This leads to a bottom up approach which might improve performance and accuracy compared to the top-down model.
+   The construction of the ODE can be found at the arxiv link given at the beginning of this document.
 
    A typical execution my look like this: 
 
-   `bin/mf_full -i <file_a> -o <file_b> -n 15 -t 0 -T 1000 -s 100000 -p 4 --tra 50`
+   `bin/mf_full -i <input> -o <output> -n <size> -c <order> -t 0 -T <end_time> -s <steps> -v`
 
    The command line options are used as follows: 
    
-   - `-i <file_a>` this switch points the program to the file "file_a" from which it will attempt to read n+1 jump rates.
+   - `-i <input>` this switch points the program to the file "file_a" from which it will attempt to read n+1 jump rates.
    Entries in the file have to be white space separated.
 
-   - `-o <file_b>` this switch points the program to the file "file_b" into which it will attempt to write the results of the comutation. 
+   - `-o <output>` this switch points the program to the file "file_b" into which it will attempt to write the results of the comutation. 
    Additional files and folders with similar names may be created to save different values. If this switch is not present a file called "generic_output_vec" will be created in the directory from which the program is run.
 
-   - `-n 15` this switch specifies the chain length
+   - `-n <size>` this switch specifies the chain length
 
    - `-t 0` this switch specifies start time. Note: The actual value here does not have any effect on the simulation. 
 
-   - `-T 1000` this switch specifies end time. Note: The actual value here dies not have any effect on the simulation and that the program may exit earlier than the time specified here. During the solving process the solver keeps track of the rate of change of the ODE system, if the absolute change of all states drops below $`10^{-5}*\delta h`$ for 100 iterations, the solver exits.
+   - `-T <end_time>` this switch specifies end time. Note: The actual value here dies not have any effect on the simulation and that the program may exit earlier than the time specified here. During the solving process the solver keeps track of the rate of change of the ODE system, if the absolute change of all states drops below $`10^{-5}*\delta h`$ for 100 iterations, the solver exits.
    !!This should be the default behaviour!!
 
-   - `-s 100000` this switch specifies the number of timesteps. In combination with `-t` and `-T` this switch defines the temporal resolution of the simulation. 
-   Reccomendended values are in the range [(T-t) * 10,(T-t) * 100].
-
-   - `-p 4` this switch tells openMP to use at most 4 threads
-
-   - `--tra 50` this switch enables recording of trajectories of the solution to the master equation. This may create new files in the location specified by `-o <output_filename>` [-> see also --save-select]
-
-   - `-m --method` this switch enables switching between rk4 and euler method for solving the ODE
-
-   In Addition to these, there are several other options avaliable for input and output. 
-
-   - `--alpha`, `--beta`, `--gamma` these switches are used to set rates for entry flow (alpha), exit flow (beta) and lattice flow (gamma). They can act as a substitute for `-i <input_file>`
-
-   - `-v --verbose` this switch enables verbose output. 
-
-## Approximate Models
-These models simulate the movements of individual particles or groups of particles on the lattice. 
-This approach means that the results will be less accurate, but larger systems may be simulated (~1e8)
- 
-### meanfield
-
-   This program uses a bottom up model, which is closed after the first "level" of ODEs. 
-   While the approach is very simplistic, results can be reasonably accurate.
-   It is recommended to check smaller simulations with the output provided by one of the fully accurate models. 
+   - `-s <steps>` this switch specifies the number of timesteps. In combination with `-t` and `-T` this switch defines the temporal resolution of the simulation. 
+   Reccomendended values are in the range [(T-t) * 10,(T-t) * 1000].
 
 
-   A typical execution my look like this: 
+   Several other command line options can be found by runnign the program using the `-h` switch.
 
-   `bin/meanfield -i <file_a> -o <file_b> -n 15 -t 0 -T 1000 -s 100000 --thread-num 8 -a 50`
-
-   The command line options are used as follows: 
-   
-   - `-i <file_a>` this switch points the program to the file "file_a" from which it will attempt to read n+1 jump rates.
-   Entries in the file have to be white space separated.
-
-   - `-o <file_b>` this switch points the program to the file "file_b" into which it will attempt to write the results of the comutation. 
-   Additional files and folders with similar names may be created to save different values. If this switch is not present a file called "generic_output_vec" will be created in the directory from which the program is run.
-
-   - `-n 15` this switch specifies the chain length
-
-   - `-t 0` this switch specifies start time. Note: The actual value here does not have any effect on the simulation. 
-
-   - `-T 1000` this switch specifies end time. Note: The actual value here dies not have any effect on the simulation and that the program may exit earlier than the time specified here. During the solving process the solver keeps track of the rate of change of the ODE system, if the absolute change of all states drops below $`10^{-5}*\delta h`$ for 100 iterations, the solver exits.
-   !!This should be the default behaviour!!
-
-   - `-s 100000` this switch specifies the number of timesteps. In combination with `-t` and `-T` this switch defines the temporal resolution of the simulation. 
-   Reccomendended values are in the range [(T-t) * 10,(T-t) * 100].
-
-   - `--thread-num 8` this switch tells openMP to use at most 8 threads
-
-   - `-a 50` this switch enables recording of trajectories of the solution to the master equation. This may create new files in the location specified by `-o <output_filename>` [-> see also --save-select]
-
-   In Addition to these, there are several other options avaliable for input and output. 
-
-   - `--alpha`, `--beta`, `--gamma` these switches are used to set rates for entry flow (alpha), exit flow (beta) and lattice flow (gamma). They can act as a substitute for `-i <input_file>`
-
-   The solver is also able to solve systems with time dependend jump rates.  
-   It is important to note here that the default behaviour of the solver is to run until `-T <num>` is reached. Because of entrainment it is not expected for the trajectories to settle at some steady state
-
-   Necessary switches for time variant flow rates
-
-   - `--time-var` this enables time variant simulation
-   with only this switch selected, the solver will assume that every jump rate is of the form $`sin(1 * t)`$
-
-   Optional switches for time variant flow rates
-
-   - `--function-type <filename>` program tries to read from given filename. The entries in the file will set the function types for the hop rates from left to right. The contents of the file may look like this "ssc ls" this would give:
-      - $`h_0(t) = \alpha(t) = sin(t)`$
-      - $`h_1(t) = sin(t)`$
-      - $`h_2(t) = cos(t)`$
-      - $`h_3(t) = t`$
-      - $`h_4(t) = \beta(t) = sin(t)`$
-
-   - `--amplitude <filename>` program tries to read from given filename. The content of the file will set the amplitude in the functions for the jump rates. For a given file with the content $`4\quad -1.3\quad 1\quad 0\quad 1.1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(t)`$
-      - $`h_1(t) = -1.3sin(t)`$
-      - $`h_2(t) = 1cos(t)`$
-      - $`h_3(t) = 0t`$
-      - $`h_4(t) = \beta(t) = 1.1sin(t)`$
-
-   - `--period <filename>` program tries to read from given filename. The content of the file will set the period in the functions for the jump rates. For a given file with the content $`1\quad 2\quad 4\quad 2\quad 3`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t)`$
-      - $`h_1(t) = -1.3sin(2t)`$
-      - $`h_2(t) = 1cos(4t)`$
-      - $`h_3(t) = 0t`$ (ignored in this case)
-      - $`h_4(t) = \beta(t) = 1.1sin(3t)`$
-   
-   - `--offset <filename>` program tries to read from given filename. The content of the file will set the offset in the functions for the jump rates. For a given file with the content $`1\quad -0.5\quad 0\quad 0.3\quad 1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t+1)`$
-      - $`h_1(t) = -1.3sin(2t-0.5)`$
-      - $`h_2(t) = 1cos(4t)`$
-      - $`h_3(t) = 0t`$ (ignored in this case)
-      - $`h_4(t) = \beta(t) = 1.1sin(3(t+1))`$
-
-   - `--constant <filename>` program tries to read from given filename. The content of the file will set the offset in the functions for the jump rates. For a given file with the content $`-1\quad -0.5\quad 0\quad 0.5\quad 1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t+1)-1`$
-      - $`h_1(t) = -1.3sin(2t-0.5)-0.5`$
-      - $`h_2(t) = 1cos(4t)+0`$
-      - $`h_3(t) = 0t+0.5`$
-      - $`h_4(t) = \beta(t) = 1.1sin(3(t+1))+1`$
-### mf_ext 
-
-   This program uses a bottom up model, which is closed after the second level of ODEs.
-   Similar to "meanfield" this enables much larger simulations at the expense of accuracy. 
-   Note: This Program may not be more accurate than the simpler "meanfield"
-
-   A typical execution my look like this: 
-
-   `bin/mf_ext -i <file_a> -o <file_b> -n 15 -t 0 -T 1000 -s 100000 --thread-num 8 -a 50`
-
-   The command line options are used as follows: 
-   
-   - `-i <file_a>` this switch points the program to the file "file_a" from which it will attempt to read n+1 jump rates.
-   Entries in the file have to be white space separated.
-
-   - `-o <file_b>` this switch points the program to the file "file_b" into which it will attempt to write the results of the comutation. 
-   Additional files and folders with similar names may be created to save different values. If this switch is not present a file called "generic_output_vec" will be created in the directory from which the program is run.
-
-   - `-n 15` this switch specifies the chain length
-
-   - `-t 0` this switch specifies start time. Note: The actual value here does not have any effect on the simulation. 
-
-   - `-T 1000` this switch specifies end time. Note: The actual value here dies not have any effect on the simulation and that the program may exit earlier than the time specified here. During the solving process the solver keeps track of the rate of change of the ODE system, if the absolute change of all states drops below $`10^{-5}*\delta h`$ for 100 iterations, the solver exits.
-   !!This should be the default behaviour!!
-
-   - `-s 100000` this switch specifies the number of timesteps. In combination with `-t` and `-T` this switch defines the temporal resolution of the simulation. 
-   Reccomendended values are in the range [(T-t) * 10,(T-t) * 100].
-
-   - `--thread-num 8` this switch tells openMP to use at most 8 threads
-
-   - `-a 50` this switch enables recording of trajectories of the solution to the master equation. This may create new files in the location specified by `-o <output_filename>` [-> see also --save-select]
-
-   In Addition to these, there are several other options avaliable for input and output. 
-
-   - `--alpha`, `--beta`, `--gamma` these switches are used to set rates for entry flow (alpha), exit flow (beta) and lattice flow (gamma). They can act as a substitute for `-i <input_file>`
-
-   The solver is also able to solve systems with time dependend jump rates.  
-   It is important to note here that the default behaviour of the solver is to run until `-T <num>` is reached. Because of entrainment it is not expected for the trajectories to settle at some steady state
-
-   Necessary switches for time variant flow rates
-
-   - `--time-var` this enables time variant simulation
-   with only this switch selected, the solver will assume that every jump rate is of the form $`sin(1 * t)`$
-
-   Optional switches for time variant flow rates
-
-   - `--function-type <filename>` program tries to read from given filename. The entries in the file will set the function types for the hop rates from left to right. The contents of the file may look like this "ssc ls" this would give:
-      - $`h_0(t) = \alpha(t) = sin(t)`$
-      - $`h_1(t) = sin(t)`$
-      - $`h_2(t) = cos(t)`$
-      - $`h_3(t) = t`$
-      - $`h_4(t) = \beta(t) = sin(t)`$
-
-   - `--amplitude <filename>` program tries to read from given filename. The content of the file will set the amplitude in the functions for the jump rates. For a given file with the content $`4\quad -1.3\quad 1\quad 0\quad 1.1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(t)`$
-      - $`h_1(t) = -1.3sin(t)`$
-      - $`h_2(t) = 1cos(t)`$
-      - $`h_3(t) = 0t`$
-      - $`h_4(t) = \beta(t) = 1.1sin(t)`$
-
-   - `--period <filename>` program tries to read from given filename. The content of the file will set the period in the functions for the jump rates. For a given file with the content $`1\quad 2\quad 4\quad 2\quad 3`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t)`$
-      - $`h_1(t) = -1.3sin(2t)`$
-      - $`h_2(t) = 1cos(4t)`$
-      - $`h_3(t) = 0t`$ (ignored in this case)
-      - $`h_4(t) = \beta(t) = 1.1sin(3t)`$
-   
-   - `--offset <filename>` program tries to read from given filename. The content of the file will set the offset in the functions for the jump rates. For a given file with the content $`1\quad -0.5\quad 0\quad 0.3\quad 1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t+1)`$
-      - $`h_1(t) = -1.3sin(2t-0.5)`$
-      - $`h_2(t) = 1cos(4t)`$
-      - $`h_3(t) = 0t`$ (ignored in this case)
-      - $`h_4(t) = \beta(t) = 1.1sin(3(t+1))`$
-
-   - `--constant <filename>` program tries to read from given filename. The content of the file will set the offset in the functions for the jump rates. For a given file with the content $`-1\quad -0.5\quad 0\quad 0.5\quad 1`$ this would give:
-      - $`h_0(t) = \alpha(t) = 4sin(1t+1)-1`$
-      - $`h_1(t) = -1.3sin(2t-0.5)-0.5`$
-      - $`h_2(t) = 1cos(4t)+0`$
-      - $`h_3(t) = 0t+0.5`$
-      - $`h_4(t) = \beta(t) = 1.1sin(3(t+1))+1`$
-
-## Non-temporal Models
-These models use an approach derived by Derrida & Evans in [this paper](http://www.lps.ens.fr/~derrida/PAPIERS/1992/domany-mukamel-92.pdf).
-Both programs are fundamentally the same, but because of the nature of the equation, the gmp version will be able to produce accurate results even if the chain is large.
-It is strongly reccomended to only use the gmp version. 
-
-### steadystates
-
-   The program uses the afore mentioned formulae to calculate the exact expected values for chains with homogenious interior jump rates and variable entry and exit rates.
-
-   The results of the program can be used to validate results of the other programs.
-
-   A typical invocation of the program may look as follows:
-
-   `bin/steadystates -a 0.1 -b 0.1 -n 10`
-
-   This will print the results to stdout. 
-   If desired, the results can be printed to a file specified by the switch:
-
-   `-o --output <filename>`
 
 
 ### steadystates_gmp
@@ -363,7 +169,7 @@ It is strongly reccomended to only use the gmp version.
 
    A typical invocation of the program may look as follows:
 
-   `bin/steadystates_gmp -a 0.1 -b 0.1 -n 10`
+   `bin/steadystates_gmp -a <alpha> -b <beta> -n 10`
 
    This will print the results to stdout. 
    If desired, the results can be printed to a file specified by the switch:
