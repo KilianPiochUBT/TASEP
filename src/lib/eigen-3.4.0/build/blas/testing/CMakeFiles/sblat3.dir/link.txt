@@ -1,1 +1,0 @@
-/usr/bin/f95 -O3 -DNDEBUG -O3 CMakeFiles/sblat3.dir/sblat3.f.o -o sblat3  -Wl,-rpath,/home/bt308081/build/eigen-3.4.0/build/blas ../libeigen_blas.so 
