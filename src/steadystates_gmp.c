@@ -7,6 +7,8 @@ usage(const char *progname)
             "-n, --nodes                Number of nodes in chain\n"
             "-a, --alpha                Entry hop rate \u03b1\n"
             "-b, --beta                 Exit jop rate \u03b2\n"
+            "-i,                        First Node Index for correlation calculation\n"
+            "-j                         Second Node Index for correlatoin calculation\n"
             "-o, --output               Name of output file to save Expected occupancy values to\n"
             "-p, --precision            Set minimal bit-width for numbers used in calculation\n"
             "--pp --print-precision     Set precision for printed results\n"
