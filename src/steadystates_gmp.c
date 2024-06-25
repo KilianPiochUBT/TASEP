@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
 
     uint_fast32_t tp_i, tp_j;
     char * tp_temp;
-    uint_fast8_t tp_i_found, tp_j_found;
+    uint_fast8_t tp_i_found=0, tp_j_found=0;
 
     FILE * F;
 
