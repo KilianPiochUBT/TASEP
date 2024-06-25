@@ -194,7 +194,6 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
 
     mpf_t first_sum_acc, second_sum_acc;
 
-    double debug;
 
     //inefficient but whatever
     mpf_t ** B, * Z, *Rho;
@@ -203,7 +202,6 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
     allocfill_Z(&Z, B, j-1, alpha, beta);
     allocfill_Rho(&Rho, B, Z, j-1, beta);
     mpf_set(tau_2, Rho[i-1]);
-    debug = mpf_get_d(tau_2);
     for(uint_fast32_t k = 0; k < j-1; k++){
         for(int l = 0; l < j; l++)
             mpf_clear(B[k][l]);    
@@ -217,9 +215,7 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
 
     //precalculate everything possible
     calculate_Z_i(&Z_N, alpha, beta, N);
-    debug = mpf_get_d(Z_N);
     calculate_Z_i(&Z_j1, alpha, beta, j-1);
-    debug = mpf_get_d(Z_j1);
     ////first sum
     //temp vars
     mpz_t fact_part1, fact_part2, fact_part3;
@@ -234,11 +230,8 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
     for(unsigned long p = 0; p < N-j; p++){
         //first factorial
         mpz_fac_ui(fact_part1, 2UL*p);
-        debug = mpz_get_d(fact_part1);
         mpz_fac_ui(fact_part2, p);
-        debug = mpz_get_d(fact_part2);
         mpz_fac_ui(fact_part3, p+1);
-        debug = mpz_get_d(fact_part3);
 
         mpz_mul(fact_part2, fact_part2, fact_part3);
 
@@ -246,13 +239,10 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
         mpf_init(f_temp2);
 
         mpf_set_z(f_temp1, fact_part1);
-        debug = mpf_get_d(f_temp1);
         mpf_set_z(f_temp2, fact_part2);
-        debug = mpf_get_d(f_temp2);
 
         mpf_init(fact_1);
         mpf_div(fact_1, f_temp1, f_temp2);
-        debug = mpf_get_d(fact_1);
 
         //tau_n-p+j-1
         mpf_init(tau_1);
@@ -260,7 +250,6 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
         allocfill_Z(&Z, B, N-p-1,alpha, beta);
         allocfill_Rho(&Rho, B, Z, N-p-1, beta);
         mpf_set(tau_1, Rho[i-1]);
-        debug = mpf_get_d(tau_1);
         for(uint_fast32_t k = 0; k < N-p-1; k++){
             for(int l = 0; l < N-p; l++)
                 mpf_clear(B[k][l]);
@@ -268,31 +257,22 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
             mpf_clear(Z[k]);
             mpf_clear(Rho[k]);
         }
-        debug = mpf_get_d(fact_1);
         free(B);
         free(Z);
         free(Rho);
-        debug = mpf_get_d(fact_1);
         //Z Quotient
 
         calculate_Z_i(&Z_N1p, alpha, beta, N-1-p);
         
-        debug = mpf_get_d(fact_1);
         mpf_div(Z_N1p, Z_N1p, Z_N);
-        debug = mpf_get_d(Z_N1p);
         
         mpf_set_d(f_temp1, 1.0);
-        debug = mpf_get_d(f_temp1);
         mpf_mul(f_temp1, Z_N1p, f_temp1);
-        debug = mpf_get_d(f_temp1);
         mpf_mul(f_temp1, tau_1, f_temp1);
-        debug = mpf_get_d(f_temp1);
         mpf_mul(f_temp1, fact_1, f_temp1);
-        debug = mpf_get_d(f_temp1);
         mpf_add(first_sum_acc, first_sum_acc, f_temp1);
     }
 
-    debug = mpf_get_d(first_sum_acc);
 
     mpf_init_set_ui(second_sum_acc, 0UL);
     mpf_init_set_ui(fact_2,0UL);    
@@ -307,51 +287,34 @@ double two_point_function(uint_fast32_t i, uint_fast32_t j, double alpha, double
         
         //init factorials
         mpz_fac_ui(fact_part1, 2*(N-j)-p);
-        debug = mpz_get_d(fact_part1);
         mpz_fac_ui(fact_part2, N-j);
-        debug = mpz_get_d(fact_part2);
         mpz_fac_ui(fact_part3, N-j+1-p);
-        debug = mpz_get_d(fact_part3);
 
         //multiply factorial expressions together
         mpz_mul_ui(fact_part1, fact_part1, p-1);
-        debug = mpz_get_d(fact_part1);
         mpz_mul(fact_part2, fact_part2, fact_part3);
-        debug = mpz_get_d(fact_part2);
 
         //transcribe to float
         mpf_set_z(fact_2, fact_part1);
-        debug = mpf_get_d(fact_2);
         mpf_set_z(fact_3, fact_part2);
-        debug = mpf_get_d(fact_3);
 
         //division
         mpf_div(fact_2, fact_2, fact_3);
-        debug = mpf_get_d(fact_2);
 
         //beta exponent
         mpf_init_set_d(beta_mpf,1./beta);
         mpf_pow_ui(beta_mpf, beta_mpf, p);
-        debug = mpf_get_d(beta_mpf);
 
         //final product
         mpf_mul(fact_2, fact_2, beta_mpf);
-        debug = mpf_get_d(fact_2);
         
         //accumulation
         mpf_add(second_sum_acc, second_sum_acc, fact_2);
-        debug = mpf_get_d(second_sum_acc);
     }
 
     mpf_mul(second_sum_acc, second_sum_acc, Z_j1);
-    debug = mpf_get_d(Z_j1);
-    debug = mpf_get_d(second_sum_acc);
     mpf_mul(second_sum_acc, second_sum_acc, tau_2);
-    debug = mpf_get_d(tau_2);
-    debug = mpf_get_d(second_sum_acc);
     mpf_div(second_sum_acc, second_sum_acc, Z_N);
-    debug = mpf_get_d(Z_N);
-    debug = mpf_get_d(second_sum_acc);
 
     mpf_add(second_sum_acc, second_sum_acc, first_sum_acc);
 
